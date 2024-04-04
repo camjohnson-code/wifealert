@@ -124,6 +124,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: 'bold',
     fontSize: 24,
+    paddingTop: 200,
+    paddingBottom: 200,
   },
   pressed: {
     elevation: 5,
