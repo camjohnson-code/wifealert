@@ -7,9 +7,10 @@ import {
   Pressable,
   View,
 } from 'react-native';
+import { alertCameron, SetIsOnType } from '../lightHelpers';
 
-const CustomButton = () => {
-  const [text, setText] = useState('Press me');
+const CustomButton = ({ setIsOn }: { setIsOn: SetIsOnType }) => {
+  const [text, setText] = useState('Press and hold');
   const [disabled, setDisabled] = useState(false);
   const [pressed, setPressed] = useState(false);
   const timeoutId1 = useRef(null);
@@ -26,9 +27,13 @@ const CustomButton = () => {
   const handlePressIn = () => {
     setPressed(true);
     setText('Are you sure?');
-    timeoutId1.current = setTimeout(() => setText('Are you actually sure?'), 2000);
+    timeoutId1.current = setTimeout(
+      () => setText('Are you actually sure?'),
+      2000
+    );
     timeoutId2.current = setTimeout(() => setText('Ok fine...'), 4000);
     timeoutId3.current = setTimeout(() => {
+      alertCameron(setIsOn);
       setDisabled(true);
       setText('Notifying Cameron...');
     }, 5000);
@@ -43,37 +48,37 @@ const CustomButton = () => {
     Animated.parallel([
       Animated.timing(sizeAnim, {
         toValue: (diagonal / 200) * 1.1,
-        duration: 8000,
+        duration: 5000,
         useNativeDriver: true,
       }),
       Animated.timing(colorAnim, {
         toValue: 1,
-        duration: 8000,
+        duration: 5000,
         useNativeDriver: true,
       }),
     ]).start();
   };
 
-const handlePressOut = () => {
+  const handlePressOut = () => {
     setPressed(false);
     clearTimeout(timeoutId1.current);
     clearTimeout(timeoutId2.current);
     clearTimeout(timeoutId3.current);
     clearTimeout(timeoutId4.current);
     Animated.parallel([
-        Animated.timing(sizeAnim, {
-            toValue: 1,
-            duration: 500,
-            useNativeDriver: true,
-        }),
-        Animated.timing(colorAnim, {
-            toValue: 0,
-            duration: 500,
-            useNativeDriver: true,
-        }),
+      Animated.timing(sizeAnim, {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: true,
+      }),
+      Animated.timing(colorAnim, {
+        toValue: 0,
+        duration: 500,
+        useNativeDriver: true,
+      }),
     ]).start();
-    setText('Press me');
-};
+    setText('Press and hold');
+  };
 
   return (
     <Pressable
@@ -81,13 +86,7 @@ const handlePressOut = () => {
       onPressOut={handlePressOut}
       disabled={disabled}
     >
-      <View
-        style={[
-          styles.buttonContainer,
-          pressed && styles.pressed,
-          disabled && styles.disabledButton,
-        ]}
-      >
+      <View style={[styles.buttonContainer, pressed && styles.pressed]}>
         <Animated.View
           style={[
             styles.button,
@@ -108,16 +107,12 @@ const styles = StyleSheet.create({
   },
   button: {
     position: 'absolute',
-    backgroundColor: 'rgb(195, 117, 0)',
     padding: 10,
     marginTop: 10,
     width: 200,
     height: 200,
     elevation: 15,
     borderRadius: 250,
-  },
-  disabledButton: {
-    backgroundColor: 'gray',
   },
   text: {
     color: 'white',
