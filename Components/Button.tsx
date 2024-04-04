@@ -7,9 +7,16 @@ import {
   Pressable,
   View,
 } from 'react-native';
+import { alertCameron } from '../lightHelpers';
 
-const CustomButton = () => {
-  const [text, setText] = useState('Press me');
+const CustomButton = ({
+  isOn,
+  setIsOn,
+}: {
+  isOn: boolean;
+  setIsOn: Function;
+}) => {
+  const [text, setText] = useState('Press and hold');
   const [disabled, setDisabled] = useState(false);
   const [pressed, setPressed] = useState(false);
   const timeoutId1 = useRef(null);
@@ -26,9 +33,13 @@ const CustomButton = () => {
   const handlePressIn = () => {
     setPressed(true);
     setText('Are you sure?');
-    timeoutId1.current = setTimeout(() => setText('Are you actually sure?'), 2000);
+    timeoutId1.current = setTimeout(
+      () => setText('Are you actually sure?'),
+      2000
+    );
     timeoutId2.current = setTimeout(() => setText('Ok fine...'), 4000);
     timeoutId3.current = setTimeout(() => {
+      alertCameron(setIsOn);
       setDisabled(true);
       setText('Notifying Cameron...');
     }, 5000);
@@ -54,26 +65,26 @@ const CustomButton = () => {
     ]).start();
   };
 
-const handlePressOut = () => {
+  const handlePressOut = () => {
     setPressed(false);
     clearTimeout(timeoutId1.current);
     clearTimeout(timeoutId2.current);
     clearTimeout(timeoutId3.current);
     clearTimeout(timeoutId4.current);
     Animated.parallel([
-        Animated.timing(sizeAnim, {
-            toValue: 1,
-            duration: 500,
-            useNativeDriver: true,
-        }),
-        Animated.timing(colorAnim, {
-            toValue: 0,
-            duration: 500,
-            useNativeDriver: true,
-        }),
+      Animated.timing(sizeAnim, {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: true,
+      }),
+      Animated.timing(colorAnim, {
+        toValue: 0,
+        duration: 500,
+        useNativeDriver: true,
+      }),
     ]).start();
     setText('Press me');
-};
+  };
 
   return (
     <Pressable
